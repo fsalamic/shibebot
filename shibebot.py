@@ -15,7 +15,7 @@ dp = Dispatcher(bot)
 
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
-    await message.reply("Hi!\nI'm ShibeBot by @bosniandoge!\nPowered by aiogram.\nSource Code: https://github.com/bosniandoge/shibebot")
+    await message.reply("Hi!\nI'm ShibeBot by @fsalamic!\nPowered by aiogram.\nSource Code: https://github.com/fsalamic/shibebot")
 
 @dp.message_handler(commands=['help'])
 async def send_welcome(message: types.Message):

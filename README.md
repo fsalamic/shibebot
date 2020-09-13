@@ -1,4 +1,4 @@
-# ShibeBot by @bosniandoge    
+# ShibeBot by @fsalamic    
 Publically available at https://t.me/bdogeshibebot 
 # Features of the bot :
 
@@ -18,7 +18,7 @@ sudo apt install python3-pip
 ```
 After installing the needed dependencies , do the following commands :
 ```
-git clone https://github.com/bosniandoge/shibebot.git
+git clone https://github.com/fsalamic/shibebot.git
 cd shibebot
 ```
 Once you do these commands, edit the API_TOKEN variable in the python script with your own bots api key, given to you by the https://t.me/BotFather.

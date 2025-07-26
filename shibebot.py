@@ -1,54 +1,74 @@
-import logging,requests,json
+import logging
+import requests
+import json
+import asyncio
 
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher, types, Router
+from aiogram.filters import Command
+from aiogram.types import Message, URLInputFile
 
-# Enter your API token
-API_TOKEN = ''
+API_TOKEN = ''  # <-- Set your token here
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher()
+router = Router()
 
+# /start command
+@router.message(Command("start"))
+async def send_welcome(message: Message):
+    await message.reply(
+        "Hi!\nI'm ShibeBot by @fsalamic!\nPowered by aiogram v3.\nSource Code: https://github.com/fsalamic/shibebot"
+    )
 
-@dp.message_handler(commands=['start'])
-async def send_welcome(message: types.Message):
-    await message.reply("Hi!\nI'm ShibeBot by @fsalamic!\nPowered by aiogram.\nSource Code: https://github.com/fsalamic/shibebot")
+# /help command
+@router.message(Command("help"))
+async def send_help(message: Message):
+    await message.reply(
+        "To use this bot do:\n"
+        " /shiba - if you want a shibe picture\n"
+        " /cat - if you want a cat picture\n"
+        " /dog - if you want a bird picture."
+    )
 
-@dp.message_handler(commands=['help'])
-async def send_welcome(message: types.Message):
-	await message.reply("To use this bot do:\n /doge - if you want a shibe picture \n /cat - if you want a cat picture \n /bird - if you want a bird picture.")
+# /shiba command
+@router.message(Command("shiba"))
+async def send_shiba(message: Message):
+    url = "https://api.thedogapi.com/v1/images/search?breed_ids=222&limit=1&api_key="
+    r = requests.get(url)
+    data = r.json()
+    shiba_url = data[0]["url"]
+    image = URLInputFile(shiba_url, filename="shiba.jpg")
+    await bot.send_photo(message.chat.id, image)
 
+# /dog command
+@router.message(Command("dog"))
+async def send_dog(message: Message):
+    url = "https://api.thedogapi.com/v1/images/search?limit=2&api_key="
+    r = requests.get(url)
+    data = r.json()
+    dog_url = data[0]["url"]
+    image = URLInputFile(dog_url, filename="dog.jpg")
+    await bot.send_photo(message.chat.id, image)
 
-@dp.message_handler(commands=['doge'])
-async def cmd_image(message: types.Message):
-	url = 'https://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true'
-	r = requests.get(url)
-	dogeurl = r.content
-	urlsecond = dogeurl[2:-2].decode('utf-8')
-	print(urlsecond)
-	await bot.send_photo(message.chat.id, types.InputFile.from_url(str(urlsecond)))
+# /cat command
+@router.message(Command("cat"))
+async def send_cat(message: Message):
+    url = "https://api.thecatapi.com/v1/images/search?limit=1&api_key="
+    r = requests.get(url)
+    data = r.json()
+    cat_url = data[0]["url"]
+    image = URLInputFile(cat_url, filename="cat.jpg")
+    await bot.send_photo(message.chat.id, image)
 
-@dp.message_handler(commands=['cat'])
-async def cmd_image(message: types.Message):
-	url = 'https://shibe.online/api/cats?count=1&urls=true&httpsUrls=true'
-	r = requests.get(url)
-	birdurl = r.content
-	urlsecond = birdurl[2:-2].decode('utf-8')
-	print(urlsecond)
-	await bot.send_photo(message.chat.id, types.InputFile.from_url(str(urlsecond)))
+# Register router with dispatcher
+dp.include_router(router)
 
-@dp.message_handler(commands=['bird'])
-async def cmd_image(message: types.Message):
-	url = 'https://shibe.online/api/birds?count=1&urls=true&httpsUrls=true'
-	r = requests.get(url)
-	birdurl = r.content
-	urlsecond = birdurl[2:-2].decode('utf-8')
-	print(urlsecond)
-	await bot.send_photo(message.chat.id, types.InputFile.from_url(str(urlsecond)))
-
+# Entry point for aiogram v3
+async def main():
+    await dp.start_polling(bot)
 
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+    import asyncio
+    asyncio.run(main())

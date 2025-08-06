@@ -6,6 +6,7 @@ import asyncio
 from aiogram import Bot, Dispatcher, types, Router
 from aiogram.filters import Command
 from aiogram.types import Message, URLInputFile
+from lynx import get_random_lynx_url
 
 API_TOKEN = ''  # <-- Set your token here
 
@@ -61,6 +62,19 @@ async def send_cat(message: Message):
     cat_url = data[0]["url"]
     image = URLInputFile(cat_url, filename="cat.jpg")
     await bot.send_photo(message.chat.id, image)
+
+# /lynx command
+@router.message(Command("lynx"))
+async def send_lynx(message: Message):
+    await message.reply("Getting a random lynx photo, please wait...")
+    # Call the function from lynx.py
+    loop = asyncio.get_event_loop()
+    lynx_url = await loop.run_in_executor(None, get_random_lynx_url)
+    if lynx_url:
+        image = URLInputFile(lynx_url, filename="lynx.jpg")
+        await bot.send_photo(message.chat.id, image)
+    else:
+        await message.reply("Sorry, couldn't fetch a lynx image right now. Try again!")
 
 # Register router with dispatcher
 dp.include_router(router)

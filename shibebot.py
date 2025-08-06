@@ -30,8 +30,9 @@ async def send_help(message: Message):
         "To use this bot do:\n"
         " /shiba - if you want a shibe picture\n"
         " /cat - if you want a cat picture\n"
-        " /dog - if you want a bird picture."
-    )
+        " /dog - if you want a dog picture\n"
+        " /lynx - if you want a lynx picture."
+   )
 
 # /shiba command
 @router.message(Command("shiba"))
